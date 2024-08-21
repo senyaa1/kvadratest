@@ -3,20 +3,19 @@ CFLAGS=
 NAME=kvadratest
 
 SRCDIR=src
-OUTDIR=bin
 
-main: ${OUTDIR}/${NAME}
+main: ${NAME}
 
 prepare:
 	mkdir -p ${OUTDIR} 
  
-${OUTDIR}/${NAME}: ${SRCDIR}/*.c
+${NAME}: ${SRCDIR}/*.c
 	${CC} -o $@ $^ ${CFLAGS}
 
 clean:
-	rm -rf ${OUTDIR} 
+	rm -rf ${NAME}
 
-all: prepare ${OUTDIR}/${NAME} 
+all: prepare ${NAME} 
 
 
 .PHONY: all
