@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <dirent.h>
 #include <string.h>
-
 #include "runner.h"
 #include "logger.h"
 
@@ -68,8 +67,7 @@ static bool read_file_to_buff(const char* filename, char* buffer)
 
 	size_t i = 0;
 	while((sym = getc(fp)) != EOF)
-	{https://github.com/senyaa1/kvadratest
-		/*if(!isprint(sym) && sym == '\n') continue;*/
+	{
 		buffer[i++] = sym;
 	}
 
@@ -101,7 +99,7 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	char* to_exec = calloc(sizeof(char), MAX_INPUT_SZ);
 
 	sprintf(to_exec, "./%s %s", program_path, args);
-	/*printf("executing: %s\n", to_exec);*/
+	printf("executing: %s\n", to_exec);
 
 
 	FILE *fp = popen(to_exec, "r");
@@ -112,7 +110,8 @@ static test_result_t run_program(const char* program_path, const char* args, con
 		free(to_exec);
 		return TESTING_ERROR;
 	}
-	size_t nbytes = fread(output, sizeof(char), sizeof(output), fp);
+	size_t nbytes = fread(output, sizeof(char), MAX_OUTPUT_SZ, fp);
+	printf("nbytes: %ld", nbytes);
 
 	pclose(fp);
 	if (nbytes == 0 && strlen(expected_output) != 0)

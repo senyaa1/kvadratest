@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	tested_program_t tp;
-	if(!initialize(&tp, "test", "examples"))
+	if(!initialize(&tp, "../bin/kvadratka", "tests"))
 	{
 		printf("can't initialize testing framework!\n");
 		return 1;
@@ -16,8 +16,8 @@ int main(int argc, char** argv)
 
 	print_available_tests(&tp);
 
-	test_result_t res = run_test(&tp, "abc");
-	print_test_result("abc", res);
+	/*test_result_t res = run_test(&tp, "abc");*/
+	/*print_test_result("abc", res);*/
 	
 	run_all_tests(&tp);
 
