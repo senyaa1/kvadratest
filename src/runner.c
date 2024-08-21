@@ -101,7 +101,7 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	char* to_exec = calloc(sizeof(char), MAX_INPUT_SZ);
 
 	sprintf(to_exec, "./%s %s", program_path, args);
-	printf("executing: %s\n", to_exec);
+	/*printf("executing: %s\n", to_exec);*/
 
 
 	FILE *fp = popen(to_exec, "r");
@@ -189,7 +189,7 @@ void run_all_tests(tested_program_t* tp)
 				break;
 		}
 	}
-	printf("\n\n===================Total===================\n");
+	printf("\n===================Total===================\n");
 	printf(GRN "Passed: %d" RESET"  |  " RED"Failed: %d"RESET"  | "RED"Errors: %d\n" RESET, total_passed, total_failed, total_errored);
 
 	if(total_failed == 0 && total_errored == 0)
