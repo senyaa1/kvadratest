@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <dirent.h>
+#include <string.h>
 
 #define MAX_PATH_LEN 1024
+#define MAX_OUTPUT_SZ 4096
+#define MAX_INPUT_SZ 4096
 
 typedef struct tested_program
 {
@@ -18,7 +21,7 @@ typedef enum test_result
 {
 	PASSED = 1,
 	FAILED = 2,
-	TEST_FAIL = 4
+	TESTING_ERROR = 4
 } test_result_t;
 
 static bool read_file_to_buff(const char* filename, char* buffer)
@@ -65,7 +68,7 @@ bool read_test_files(tested_program_t* tp, const char* test_name, char* input_da
 	char* test_path = malloc(sizeof(char) * MAX_PATH_LEN);
 
 	sprintf(test_path, "%s/%s.in", tp->tests_path, test_name);
-	result &= read_file_to_buff(test_path, input_data))
+	result &= read_file_to_buff(test_path, input_data);
 
 	sprintf(test_path, "%s/%s.out", tp->tests_path, test_name);
 	result &= read_file_to_buff(test_path, output_data);
@@ -73,6 +76,37 @@ bool read_test_files(tested_program_t* tp, const char* test_name, char* input_da
 	free(test_path);
 
 	return result;
+}
+
+test_result_t run_program(const char* program_path, const char* args, const char* expected_output)
+{
+	char to_exec[MAX_INPUT_SZ];
+	char output[MAX_OUTPUT_SZ];
+
+	sprintf(to_exec, "%s %s", program_path, args);
+
+	FILE *fp = popen(to_exec, "r");
+	if (fp == 0)
+	{
+		fprintf(stderr, "failed to create pipeline\n");
+		return TESTING_ERROR;
+	}
+	size_t nbytes = fread(output, sizeof(char), sizeof(output), fp);
+
+	pclose(fp);
+	if (nbytes == 0 && strlen(expected_output) == 0)
+	{
+		printf("no output available!\n");
+		return TESTING_ERROR;
+	}
+
+	if (strcmp(output, expected_output) != 0)
+	{
+		printf("output doesn't match the expected one!\n");
+		return FAILED;
+	}
+
+	return PASSED;
 }
 
 test_result_t run_test(tested_program_t* tp, const char* test_name)
@@ -87,13 +121,15 @@ test_result_t run_test(tested_program_t* tp, const char* test_name)
 
 		printf("Can't read test files!\n");
 		
-		return TEST_FAIL;
+		return TESTING_ERROR;
 	}
 
-
+	test_result_t res = run_program(tp->executable_path, input_data, output_data);
 
 	free(input_data);
 	free(output_data);
+
+	return res;
 }
 
 int main(int argc, char** argv)
