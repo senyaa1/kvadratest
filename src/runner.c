@@ -99,7 +99,7 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	char* to_exec = calloc(sizeof(char), MAX_INPUT_SZ);
 
 	sprintf(to_exec, "./%s %s", program_path, args);
-	printf("executing: %s\n", to_exec);
+	/*printf("executing: %s\n", to_exec);*/
 
 
 	FILE *fp = popen(to_exec, "r");
@@ -111,7 +111,6 @@ static test_result_t run_program(const char* program_path, const char* args, con
 		return TESTING_ERROR;
 	}
 	size_t nbytes = fread(output, sizeof(char), MAX_OUTPUT_SZ, fp);
-	printf("nbytes: %ld", nbytes);
 
 	pclose(fp);
 	if (nbytes == 0 && strlen(expected_output) != 0)
