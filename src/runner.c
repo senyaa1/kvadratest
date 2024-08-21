@@ -115,7 +115,7 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	pclose(fp);
 	if (nbytes == 0 && strlen(expected_output) == 0)
 	{
-		printf("no output available!\n");
+		printf(RED "no output available!\n" RESET);
 		return TESTING_ERROR;
 	}
 
@@ -140,7 +140,7 @@ test_result_t run_test(tested_program_t* tp, const char* test_name)
 		free(input_data);
 		free(output_data);
 
-		printf("Can't read test files!\n");
+		printf(RED "Can't read test files!\n" RESET);
 		
 		return TESTING_ERROR;
 	}
@@ -153,17 +153,41 @@ test_result_t run_test(tested_program_t* tp, const char* test_name)
 	return res;
 }
 
-void run_and_print(const char* test_name, tested_program_t* tp)
+test_result_t run_and_print(const char* test_name, tested_program_t* tp)
 {
-	print_test_result(test_name, run_test(tp, test_name));
+	test_result_t res = run_test(tp, test_name);
+	print_test_result(test_name, res);
+	return res;
 }
 
 void run_all_tests(tested_program_t* tp)
 {
+	int total_passed = 0, total_failed = 0, total_errored = 0;
 	for(int i = 0; i < tp->test_cnt; i++)
 	{
-		run_and_print(tp->tests[i], tp);
+		test_result_t res = run_and_print(tp->tests[i], tp);
+		
+		switch(res)
+		{
+			case PASSED:
+				total_passed++;
+				break;
+			case FAILED:
+				total_failed++;
+				break;
+			default:
+			case TESTING_ERROR:
+				total_errored++;
+				break;
+		}
 	}
+	printf("\n\n===================Total===================\n");
+	printf(GRN "Passed: %d" RESET"  |  " RED"Failed: %d"RESET"  | "RED"Errors: %d\n" RESET, total_passed, total_failed, total_errored);
+
+	if(total_failed == 0 && total_errored == 0)
+		printf(GRN "All tests passed!\n" RESET);
+	else
+		printf(RED "Some tests failed!\n" RESET);
 }
 
 bool initialize(tested_program_t *tp, char* program_path, char* tests_directory)

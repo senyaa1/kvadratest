@@ -31,4 +31,4 @@ void run_all_tests(tested_program_t* tp);
 
 void destroy_tp(tested_program_t* tp);
 
-void run_and_print(const char* test_name, tested_program_t* tp);
+test_result_t run_and_print(const char* test_name, tested_program_t* tp);
