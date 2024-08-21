@@ -14,12 +14,14 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	printf("succesfully initialized tests!\n");
 	print_available_tests(&tp);
 
+	test_result_t res = run_test(&tp, "abc");
+	print_test_result("abc", res);
 	
 	run_all_tests(&tp);
 
 	destroy_tp(&tp);
+
 	return 0;
 }

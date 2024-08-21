@@ -68,8 +68,8 @@ static bool read_file_to_buff(const char* filename, char* buffer)
 
 	size_t i = 0;
 	while((sym = getc(fp)) != EOF)
-	{
-		/*if(!isprint(sym)) continue;*/
+	{https://github.com/senyaa1/kvadratest
+		/*if(!isprint(sym) && sym == '\n') continue;*/
 		buffer[i++] = sym;
 	}
 
@@ -97,8 +97,8 @@ static bool read_test_files(tested_program_t* tp, const char* test_name, char* i
 
 static test_result_t run_program(const char* program_path, const char* args, const char* expected_output)
 {
-	char to_exec[MAX_INPUT_SZ];
-	char output[MAX_OUTPUT_SZ];
+	char* output = calloc(sizeof(char), MAX_OUTPUT_SZ);
+	char* to_exec = calloc(sizeof(char), MAX_INPUT_SZ);
 
 	sprintf(to_exec, "./%s %s", program_path, args);
 	printf("executing: %s\n", to_exec);
@@ -108,14 +108,18 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	if (fp == 0)
 	{
 		fprintf(stderr, "failed to create pipeline\n");
+		free(output);
+		free(to_exec);
 		return TESTING_ERROR;
 	}
 	size_t nbytes = fread(output, sizeof(char), sizeof(output), fp);
 
 	pclose(fp);
-	if (nbytes == 0 && strlen(expected_output) == 0)
+	if (nbytes == 0 && strlen(expected_output) != 0)
 	{
 		printf(RED "no output available!\n" RESET);
+		free(output);
+		free(to_exec);
 		return TESTING_ERROR;
 	}
 
@@ -123,10 +127,14 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	if (strcmp(output, expected_output) != 0)
 	{
 		/*printf("output doesn't match the expected one!\n");*/
-		/*printf("output: %s=========\nexpected_output: %s\n", output, expected_output);*/
+		printf("output: \n%s\n=========\nexpected_output: \n%s\n", output, expected_output);
+		free(output);
+		free(to_exec);
 		return FAILED;
 	}
 
+	free(output);
+	free(to_exec);
 	return PASSED;
 }
 
