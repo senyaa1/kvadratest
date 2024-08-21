@@ -17,9 +17,8 @@ int main(int argc, char** argv)
 	printf("succesfully initialized tests!\n");
 	print_available_tests(&tp);
 
-	test_result_t res = run_test(&tp, "1");
-	print_test_result("1", res);
-
+	
+	run_all_tests(&tp);
 
 	destroy_tp(&tp);
 	return 0;

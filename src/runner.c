@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "runner.h"
+#include "logger.h"
 
 
 static char* get_filename_wo_extension(const char* filepath)
@@ -68,7 +69,7 @@ static bool read_file_to_buff(const char* filename, char* buffer)
 	size_t i = 0;
 	while((sym = getc(fp)) != EOF)
 	{
-		if(!isprint(sym)) continue;
+		/*if(!isprint(sym)) continue;*/
 		buffer[i++] = sym;
 	}
 
@@ -85,7 +86,7 @@ static bool read_test_files(tested_program_t* tp, const char* test_name, char* i
 	result &= read_file_to_buff(test_path, input_data);
 
 
-	printf("test_path: %s\n", test_path);
+	/*printf("test_path: %s\n", test_path);*/
 	sprintf(test_path, "%s/%s.out", tp->tests_path, test_name);
 	result &= read_file_to_buff(test_path, output_data);
 
@@ -100,8 +101,7 @@ static test_result_t run_program(const char* program_path, const char* args, con
 	char output[MAX_OUTPUT_SZ];
 
 	sprintf(to_exec, "./%s %s", program_path, args);
-	printf("to_exec: %s\n", to_exec);
-	return TESTING_ERROR;
+	printf("executing: %s\n", to_exec);
 
 
 	FILE *fp = popen(to_exec, "r");
@@ -119,9 +119,11 @@ static test_result_t run_program(const char* program_path, const char* args, con
 		return TESTING_ERROR;
 	}
 
+
 	if (strcmp(output, expected_output) != 0)
 	{
-		printf("output doesn't match the expected one!\n");
+		/*printf("output doesn't match the expected one!\n");*/
+		/*printf("output: %s=========\nexpected_output: %s\n", output, expected_output);*/
 		return FAILED;
 	}
 
@@ -143,9 +145,6 @@ test_result_t run_test(tested_program_t* tp, const char* test_name)
 		return TESTING_ERROR;
 	}
 
-	printf("input_data: %s\n", input_data);
-	printf("output_data: %s\n", output_data);
-
 	test_result_t res = run_program(tp->executable_path, input_data, output_data);
 
 	free(input_data);
@@ -154,9 +153,17 @@ test_result_t run_test(tested_program_t* tp, const char* test_name)
 	return res;
 }
 
+void run_and_print(const char* test_name, tested_program_t* tp)
+{
+	print_test_result(test_name, run_test(tp, test_name));
+}
+
 void run_all_tests(tested_program_t* tp)
 {
-
+	for(int i = 0; i < tp->test_cnt; i++)
+	{
+		run_and_print(tp->tests[i], tp);
+	}
 }
 
 bool initialize(tested_program_t *tp, char* program_path, char* tests_directory)
