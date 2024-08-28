@@ -10,7 +10,7 @@
 
 static char* get_filename_wo_extension(const char* filepath)
 {
-	char* name = malloc(sizeof(char) * 256);
+	char* name = calloc(256, sizeof(char));
 	int dot_index = strchr(filepath, '.') - filepath;
 
 	memcpy(name, filepath, dot_index);
@@ -21,7 +21,7 @@ static char* get_filename_wo_extension(const char* filepath)
 
 static char* get_file_extension(const char* filepath)
 {
-	char* ext = malloc(sizeof(char) * 256);
+	char* ext = calloc(256, sizeof(char));
 	int dot_index = strchr(filepath, '.') - filepath;
 
 	memcpy(ext, filepath + dot_index, strlen(filepath) - dot_index + 1);
@@ -30,7 +30,7 @@ static char* get_file_extension(const char* filepath)
 
 static bool list_tests(tested_program_t* tp)
 {
-	tp->tests = malloc(sizeof(char*) * MAX_TEST_CNT);
+	tp->tests = calloc(MAX_TEST_CNT, sizeof(char*));
 	tp->test_cnt = 0;
 
 	DIR *d;
@@ -78,7 +78,7 @@ static bool read_file_to_buff(const char* filename, char* buffer)
 static bool read_test_files(tested_program_t* tp, const char* test_name, char* input_data, char* output_data)
 {
 	bool result = true;
-	char* test_path = malloc(sizeof(char) * MAX_PATH_LEN);
+	char* test_path = calloc(MAX_PATH_LEN, sizeof(char));
 
 	sprintf(test_path, "%s/%s.inp", tp->tests_path, test_name);
 	result &= read_file_to_buff(test_path, input_data);
